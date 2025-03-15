@@ -6,7 +6,7 @@
 #    By: vgoyzuet <vgoyzuet@student.42madrid.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/03/12 17:35:31 by vgoyzuet          #+#    #+#              #
-#    Updated: 2025/03/15 17:25:14 by vgoyzuet         ###   ########.fr        #
+#    Updated: 2025/03/15 20:56:20 by vgoyzuet         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -27,13 +27,13 @@ SRCS = 	src/main.c\
 
 OBJS = $(SRCS:%.c=objs/%.o)
 
-all = $(LIBFT) $(NAME)
+all: $(LIBFT) $(NAME)
 
 $(NAME): objs $(OBJS)
 	@$(CC) $(CFLAGS) $(OBJS) $(LIBFT) -o $(NAME)
 	@echo "$(GREEN)pipex ready$(WHITE)"
 
-$(LIBFT)
+$(LIBFT):
 	@make --silent -C libft
 
 objs:

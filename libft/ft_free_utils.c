@@ -6,7 +6,7 @@
 /*   By: vgoyzuet <vgoyzuet@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/09 00:34:15 by vgoyzuet          #+#    #+#             */
-/*   Updated: 2025/03/04 22:42:32 by vgoyzuet         ###   ########.fr       */
+/*   Updated: 2025/03/15 20:27:25 by vgoyzuet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,31 +24,9 @@ void	free_array(char **arr)
 	free(arr);
 }
 
-void	free_list(t_list **stack)
+void	ft_exit_free(int EXIT, char *message, char **arr)
 {
-	t_list	*tmp;
-
-	tmp = NULL;
-	if (!stack || !*stack)
-		return ;
-	while (*stack)
-	{
-		tmp = (*stack)->next;
-		free((*stack)->content);
-		free(*stack);
-		*stack = tmp;
-	}
-}
-
-static void	free_all(t_list **stack, char **arr)
-{
-	free_list(stack);
 	free_array(arr);
-}
-
-void	ft_exit_free(int EXIT, t_list **stack, char *message, char **arr)
-{
-	free_all(stack, arr);
 	if (EXIT == EXIT_FAILURE)
 		ft_perror(message);
 	else
