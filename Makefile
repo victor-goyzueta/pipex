@@ -6,7 +6,7 @@
 #    By: vgoyzuet <vgoyzuet@student.42madrid.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/03/12 17:35:31 by vgoyzuet          #+#    #+#              #
-#    Updated: 2025/03/12 17:41:01 by vgoyzuet         ###   ########.fr        #
+#    Updated: 2025/03/15 17:25:14 by vgoyzuet         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,10 +19,12 @@ NAME = pipex
 
 CC = cc
 CFLAGS = -Wall -Wextra -Werror -I libft
+CFLAGS += -I inc
 
 LIBFT = libft/libft.a
 
-SRCS = src/main.cc
+SRCS = 	src/main.c\
+
 OBJS = $(SRCS:%.c=objs/%.o)
 
 all = $(LIBFT) $(NAME)
