@@ -6,7 +6,7 @@
 #    By: vgoyzuet <vgoyzuet@student.42madrid.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/03/12 17:35:31 by vgoyzuet          #+#    #+#              #
-#    Updated: 2025/03/15 20:56:20 by vgoyzuet         ###   ########.fr        #
+#    Updated: 2025/03/15 20:02:48 by vgoyzuet         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,6 +20,7 @@ NAME = pipex
 CC = cc
 CFLAGS = -Wall -Wextra -Werror -I libft
 CFLAGS += -I inc
+CFLAGS += -g
 
 LIBFT = libft/libft.a
 
