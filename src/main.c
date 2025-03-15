@@ -6,7 +6,7 @@
 /*   By: vgoyzuet <vgoyzuet@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 17:32:54 by vgoyzuet          #+#    #+#             */
-/*   Updated: 2025/03/15 20:08:04 by vgoyzuet         ###   ########.fr       */
+/*   Updated: 2025/03/15 21:16:15 by vgoyzuet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ static void	find_path(char *command, char **envp, char **path)
 	i = -1;
 	while (directories[++i])
 	{
-		*path = ft_strjoin(directories[i], "/");
+		*path = so_strjoin(directories[i], "/");
 		if (!*path)
 			ft_exit_free(EXIT_FAILURE, FAIL_ALLOC, directories);
 		*path = ft_strjoin(*path, command);
@@ -63,15 +63,6 @@ static void	execute_command(char *argv, char **envp)
 	}
 }
 
-static void	init_pipe(int *pipefd, pid_t *pid)
-{
-	if (pipe(pipefd) == -1)
-		ft_perror(FAIL_PIPE);
-	*pid = fork();
-	if (*pid == -1)
-		ft_perror(FAIL_FORK);
-}
-
 static void	child_process(char **argv, char **envp, int *fd, pid_t pid)
 {
 	int	filein;
@@ -100,7 +91,7 @@ static void	parent_process(char **argv, char **envp, int *fd, pid_t pid)
 
 	if (pid == 0)
 		return ;
-	if (waitpid(pid, NULL, 0))
+	if (waitpid(pid, NULL, 0) == -1)
 		ft_perror(FAIL_WAIT);
 	fileout = open(argv[4], O_WRONLY | O_CREAT | O_TRUNC, 0777);
 	if (fileout == -1)
@@ -125,7 +116,11 @@ int	main(int argc, char **argv, char **envp)
 
 	if (argc != 5)
 		ft_perror(USAGE);
-	init_pipe(fd, &pid);
+	if (pipe(fd) == -1)
+		ft_perror(FAIL_PIPE);
+	pid = fork();
+	if (pid == -1)
+		ft_perror(FAIL_FORK);
 	child_process(argv, envp, fd, pid);
 	parent_process(argv, envp, fd, pid);
 	return (0);
