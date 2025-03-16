@@ -6,7 +6,7 @@
 #    By: vgoyzuet <vgoyzuet@student.42madrid.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/03/12 17:35:31 by vgoyzuet          #+#    #+#              #
-#    Updated: 2025/03/15 21:23:24 by vgoyzuet         ###   ########.fr        #
+#    Updated: 2025/03/16 16:59:14 by vgoyzuet         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -23,7 +23,8 @@ CFLAGS += -I inc
 
 LIBFT = libft/libft.a
 
-SRCS = 	src/main.c\
+SRCS = 	src/main.c	\
+		src/utils.c	\
 
 OBJS = $(SRCS:%.c=objs/%.o)
 
