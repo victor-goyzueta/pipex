@@ -6,7 +6,7 @@
 /*   By: vgoyzuet <vgoyzuet@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 16:56:22 by vgoyzuet          #+#    #+#             */
-/*   Updated: 2025/03/17 17:51:21 by vgoyzuet         ###   ########.fr       */
+/*   Updated: 2025/03/17 19:12:12 by vgoyzuet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,7 +86,7 @@ void	middle_process(char **argv, char **envp, t_info info, int pre_fd)
 		|| dup2(info.fd_tmp[1], STDOUT_FILENO) == -1)
 		ft_perror(FAIL_MID);
 	if (close(pre_fd) == -1 || close(info.fd_tmp[0]) == -1
-		|| close(info.fd[1]) == -1)
+		|| close(info.fd_tmp[1]) == -1)
 		ft_perror(FAIL_CLOSE_FD);
 	execute_command(argv[info.i], envp);
 	exit(EXIT_SUCCESS);
