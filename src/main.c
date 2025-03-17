@@ -6,7 +6,7 @@
 /*   By: vgoyzuet <vgoyzuet@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 17:32:54 by vgoyzuet          #+#    #+#             */
-/*   Updated: 2025/03/17 01:34:37 by vgoyzuet         ###   ########.fr       */
+/*   Updated: 2025/03/17 13:22:59 by vgoyzuet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,12 +21,12 @@ static void	middle_process(char **argv, char **envp, t_info info, int pre_fd)
 		|| close(info.fd[1]) == -1)
 		ft_perror(FAIL_CLOSE_FD);
 	execute_command(argv[info.i], envp);
-	exit(0);
+	exit(EXIT_SUCCESS);
 }
 
 static void	check_process(char **argv, char **envp, t_info *info, int argc)
 {
-	if (argc < 5)
+	if (argc < 6)
 		return ;
 	if (!info)
 		ft_perror(FAIL_ALLOC);
@@ -73,6 +73,7 @@ static void	child_process(char **argv, char **envp, t_info info)
 		|| close(info.fd[1]) == -1)
 		ft_perror(FAIL_CLOSE_FD);
 	execute_command(argv[2], envp);
+	exit(EXIT_SUCCESS);
 }
 
 static void	parent_process(char **argv, char **envp, t_info info)
