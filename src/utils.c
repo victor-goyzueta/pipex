@@ -6,7 +6,7 @@
 /*   By: vgoyzuet <vgoyzuet@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 16:56:22 by vgoyzuet          #+#    #+#             */
-/*   Updated: 2025/03/17 16:37:48 by vgoyzuet         ###   ########.fr       */
+/*   Updated: 2025/03/17 17:39:36 by vgoyzuet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ static void	find_path(char *command, char **envp, char **pathname)
 		return ;
 	directories = ft_split(envp[i] + 5, ':');
 	if (!directories)
-		ft_perror(FAIL_ALLOC);
+		ft_exit_free(EXIT_FAILURE, FAIL_ALLOC, directories);
 	i = -1;
 	while (directories[++i])
 	{
