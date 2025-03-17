@@ -6,7 +6,7 @@
 /*   By: vgoyzuet <vgoyzuet@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 17:27:08 by vgoyzuet          #+#    #+#             */
-/*   Updated: 2025/03/17 17:51:26 by vgoyzuet         ###   ########.fr       */
+/*   Updated: 2025/03/17 20:06:21 by vgoyzuet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,5 +41,7 @@ typedef struct s_info
 void	execute_command(char *argv, char **envp);
 void	set_info(t_info *info, bool check);
 void	middle_process(char **argv, char **envp, t_info info, int pre_fd);
+char	**get_command(char *argv);
+void	find_path(char *command, char **envp, char **pathname);
 
 #endif

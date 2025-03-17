@@ -6,7 +6,7 @@
 /*   By: vgoyzuet <vgoyzuet@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 19:48:23 by vgoyzuet          #+#    #+#             */
-/*   Updated: 2025/03/15 21:09:19 by vgoyzuet         ###   ########.fr       */
+/*   Updated: 2025/03/17 20:08:59 by vgoyzuet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,8 @@ void	ft_putnbrfd(int n, int fd);
 long	ft_atol(const char *str);
 int		ft_abs(int x);
 char	*so_strjoin(char const *s1, char const *s2);
+int		ft_is_space_tab(int c);
+
 
 /*Libft->linked list*/
 typedef struct s_list
@@ -105,4 +107,5 @@ char	*get_next_line(int fd);
 /*free*/
 void	free_array(char **arr);
 void	ft_exit_free(int EXIT, char *message, char **arr);
+
 #endif

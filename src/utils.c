@@ -6,49 +6,20 @@
 /*   By: vgoyzuet <vgoyzuet@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 16:56:22 by vgoyzuet          #+#    #+#             */
-/*   Updated: 2025/03/17 19:17:51 by vgoyzuet         ###   ########.fr       */
+/*   Updated: 2025/03/17 21:23:11 by vgoyzuet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
-
-static void	find_path(char *command, char **envp, char **pathname)
-{
-	int		i;
-	char	**directories;
-
-	i = 0;
-	while (envp[i] && !ft_strnstr(envp[i], "PATH=", 5))
-		i++;
-	if (!envp[i])
-		return ;
-	directories = ft_split(envp[i] + 5, ':');
-	if (!directories)
-		ft_exit_free(EXIT_FAILURE, FAIL_ALLOC, directories);
-	i = -1;
-	while (directories[++i])
-	{
-		*pathname = so_strjoin(directories[i], "/");
-		if (!*pathname)
-			ft_exit_free(EXIT_FAILURE, FAIL_ALLOC, directories);
-		*pathname = ft_strjoin(*pathname, command);
-		if (!*pathname)
-			ft_exit_free(EXIT_FAILURE, FAIL_ALLOC, directories);
-		if (access(*pathname, F_OK) == 0)
-			return (free_array(directories));
-		free(*pathname);
-	}
-	return (free_array(directories));
-}
 
 void	execute_command(char *argv, char **envp)
 {
 	char	**command;
 	char	*pathname;
 
-	command = ft_split(argv, ' ');
+	command = ft_split(argv, ' '); //or get_command
 	if (!command)
-		ft_perror(FAIL_ALLOC);
+		ft_perror(FAIL_ALLOC); //free?
 	pathname = NULL;
 	find_path(command[0], envp, &pathname);
 	if (!pathname)
