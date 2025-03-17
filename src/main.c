@@ -6,7 +6,7 @@
 /*   By: vgoyzuet <vgoyzuet@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 17:32:54 by vgoyzuet          #+#    #+#             */
-/*   Updated: 2025/03/17 17:37:54 by vgoyzuet         ###   ########.fr       */
+/*   Updated: 2025/03/17 17:53:51 by vgoyzuet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,10 @@
 
 static void	check_process(char **argv, char **envp, t_info *info, int argc)
 {
-	if (argc < 6)
+	if (argc < 6 || info->pid == 0)
 		return ;
 	if (!info)
 		ft_perror(FAIL_ALLOC);
-	if (info->pid == 0)
-		return ;
 	info->i = 2;
 	info->pre_fd = info->fd[0];
 	while (info->i < argc - 2)
@@ -63,6 +61,7 @@ static void	child_process(char **argv, char **envp, t_info info)
 		|| close(info.fd[1]) == -1)
 		ft_perror(FAIL_CLOSE_FD);
 	execute_command(argv[2], envp);
+	exit(EXIT_SUCCESS);
 }
 
 static void	parent_process(char **argv, char **envp, t_info info)
