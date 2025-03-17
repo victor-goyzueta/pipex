@@ -6,7 +6,7 @@
 /*   By: vgoyzuet <vgoyzuet@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 16:56:22 by vgoyzuet          #+#    #+#             */
-/*   Updated: 2025/03/17 01:21:19 by vgoyzuet         ###   ########.fr       */
+/*   Updated: 2025/03/17 01:42:38 by vgoyzuet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,19 +65,20 @@ void	execute_command(char *argv, char **envp)
 
 void	set_info(t_info *info)
 {
-	(*info).i = 0;
-	(*info).fd[0] = 0;
-	(*info).fd[1] = 0;
-	(*info).fd_tmp[0] = 0;
-	(*info).fd_tmp[1] = 0;
-	(*info).pid = 0;
-	(*info).pid_tmp = 0;
+	info->i = 0;
+	info->fd[0] = 0;
+	info->fd[1] = 0;
+	info->fd_tmp[0] = 0;
+	info->fd_tmp[1] = 0;
+	info->pre_fd = 0;
+	info->pid = 0;
+	info->pid_tmp = 0;
 }
 
 void	set_info_tmp(t_info *info)
 {
-	(*info).fd_tmp[0] = 0;
-	(*info).fd_tmp[1] = 0;
-	(*info).pid_tmp = 0;
-	(*info).i++;
+	info->fd_tmp[0] = 0;
+	info->fd_tmp[1] = 0;
+	info->pid_tmp = 0;
+	info->i += 1;
 }

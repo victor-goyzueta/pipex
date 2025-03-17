@@ -6,7 +6,7 @@
 /*   By: vgoyzuet <vgoyzuet@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 17:27:08 by vgoyzuet          #+#    #+#             */
-/*   Updated: 2025/03/17 01:35:23 by vgoyzuet         ###   ########.fr       */
+/*   Updated: 2025/03/17 01:39:00 by vgoyzuet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,6 @@
 typedef struct s_info
 {
 	int		i;
-	int		argc;
 	int		fd[2];
 	int		fd_tmp[2];
 	int		pre_fd;
