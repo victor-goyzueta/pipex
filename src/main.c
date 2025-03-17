@@ -6,33 +6,50 @@
 /*   By: vgoyzuet <vgoyzuet@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 17:32:54 by vgoyzuet          #+#    #+#             */
-/*   Updated: 2025/03/16 22:22:34 by vgoyzuet         ###   ########.fr       */
+/*   Updated: 2025/03/17 01:34:37 by vgoyzuet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
-static void	middle_process(char **argv, char **envp, t_info info, int i)
+static void	middle_process(char **argv, char **envp, t_info info, int pre_fd)
 {
-	//int		filemid;
-	(void)argv, (void)envp, (void)i;
+	if (dup2(pre_fd, STDIN_FILENO) == -1
+		|| dup2(info.fd_tmp[1], STDOUT_FILENO) == -1)
+		ft_perror(FAIL_MID);
+	if (close(pre_fd) == -1 || close(info.fd_tmp[0]) == -1
+		|| close(info.fd[1]) == -1)
+		ft_perror(FAIL_CLOSE_FD);
+	execute_command(argv[info.i], envp);
+	exit(0);
+}
 
-	if (info.pid != 0 || info.pid_tmp != 0)
+static void	check_process(char **argv, char **envp, t_info *info, int argc)
+{
+	if (argc < 5)
 		return ;
-	// if (waitpid(info.pid_tmp, NULL, 0) == -1)
-	// 	ft_perror(FAIL_WAIT);
-	// if (dup2(info.fd_tmp[1], STDOUT_FILENO) == -1
-	// 	|| dup2(filemid, STDIN_FILENO) == -1)
-	// {
-	// 	if (close(filemid) == -1 || close(info.fd_tmp[0]) == -1
-	// 		|| close(info.fd_tmp[1]) == -1)
-	// 		ft_perror(FAIL_CLOSE_FD);
-	// 	ft_perror(FAIL_CHILD);
-	// }
-	// if (close(filemid) == - 1 || close(info.fd_tmp[0]) == -1
-	// 	|| close(info.fd_tmp[1]) == -1)
-	// 	ft_perror(FAIL_CLOSE_FD);
-	// execute_command(argv[i], envp);
+	if (!info)
+		ft_perror(FAIL_ALLOC);
+	info->i = 2;
+	info->pre_fd = info->fd[0];
+	while (info->i < argc - 2)
+	{
+		set_info_tmp(info);
+		if (pipe(info->fd_tmp) == -1)
+			ft_perror(FAIL_PIPE);
+		info->pid_tmp = fork();
+		if (info->pid_tmp == -1)
+			ft_perror(FAIL_FORK);
+		if (info->pid_tmp == 0)
+			middle_process(argv, envp, *info, info->pre_fd);
+		else
+		{
+			if (close(info->fd_tmp[1]) == -1 || close(info->pre_fd) == -1)
+				ft_perror(FAIL_CLOSE_FD);
+			info->pre_fd = info->fd_tmp[0];
+		}
+	}
+	info->fd[0] = info->pre_fd;
 }
 
 static void	child_process(char **argv, char **envp, t_info info)
@@ -44,7 +61,8 @@ static void	child_process(char **argv, char **envp, t_info info)
 	filein = open(argv[1], O_RDONLY);
 	if (filein == -1)
 		ft_perror(FAIL_OPEN_FD);
-	if (dup2(info.fd[1], STDOUT_FILENO) == -1 || dup2(filein, STDIN_FILENO) == -1)
+	if (dup2(info.fd[1], STDOUT_FILENO) == -1
+		|| dup2(filein, STDIN_FILENO) == -1)
 	{
 		if (close(filein) == -1 || close(info.fd[0]) == -1
 			|| close(info.fd[1]) == -1)
@@ -72,7 +90,8 @@ static void	parent_process(char **argv, char **envp, t_info info)
 	fileout = open(argv[i - 1], O_WRONLY | O_CREAT | O_TRUNC, 0777);
 	if (fileout == -1)
 		ft_perror(FAIL_OPEN_FD);
-	if (dup2(info.fd[0], STDIN_FILENO) == -1 || dup2(fileout, STDOUT_FILENO) == -1)
+	if (dup2(info.fd[0], STDIN_FILENO) == -1
+		|| dup2(fileout, STDOUT_FILENO) == -1)
 	{
 		if (close(fileout) == -1 || close(info.fd[0]) == -1
 			|| close(info.fd[1]) == -1)
@@ -91,38 +110,14 @@ int	main(int argc, char **argv, char **envp)
 
 	if (argc < 5)
 		ft_perror(USAGE);
-	ft_memset(&info, 0, sizeof(t_info));
+	set_info(&info);
 	if (pipe(info.fd) == -1)
 		ft_perror(FAIL_PIPE);
 	info.pid = fork();
 	if (info.pid == -1)
 		ft_perror(FAIL_FORK);
-	/*test*/
-	if (info.pid != 0)
-		printf("Parent PID: %d\n", getpid());
-	else
-		printf("Child PID: %d\n", getpid());
-	/*end*/
 	child_process(argv, envp, info);
-	info.i = 2;
-	while (--argc >= 5 && info.pid_tmp == 0)
-	{
-		printf("In loop\n");
-		set_info(&info);
-		if (pipe(info.fd_tmp) == -1)
-			ft_perror(FAIL_PIPE);
-		info.pid_tmp = fork();
-		if (info.pid_tmp == -1)
-			ft_perror(FAIL_FORK);
-		/*test*/
-		if (info.pid_tmp == 0)
-		{
-			printf("In\n");
-			printf("PID: %d\n", getpid());
-		}
-		/*end*/
-		middle_process(argv, envp, info, info.i);
-	}
+	check_process(argv, envp, &info, argc);
 	parent_process(argv, envp, info);
 	return (0);
 }
