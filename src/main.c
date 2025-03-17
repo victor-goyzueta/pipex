@@ -6,23 +6,11 @@
 /*   By: vgoyzuet <vgoyzuet@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 17:32:54 by vgoyzuet          #+#    #+#             */
-/*   Updated: 2025/03/17 13:22:59 by vgoyzuet         ###   ########.fr       */
+/*   Updated: 2025/03/17 16:34:50 by vgoyzuet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
-
-static void	middle_process(char **argv, char **envp, t_info info, int pre_fd)
-{
-	if (dup2(pre_fd, STDIN_FILENO) == -1
-		|| dup2(info.fd_tmp[1], STDOUT_FILENO) == -1)
-		ft_perror(FAIL_MID);
-	if (close(pre_fd) == -1 || close(info.fd_tmp[0]) == -1
-		|| close(info.fd[1]) == -1)
-		ft_perror(FAIL_CLOSE_FD);
-	execute_command(argv[info.i], envp);
-	exit(EXIT_SUCCESS);
-}
 
 static void	check_process(char **argv, char **envp, t_info *info, int argc)
 {
@@ -34,7 +22,7 @@ static void	check_process(char **argv, char **envp, t_info *info, int argc)
 	info->pre_fd = info->fd[0];
 	while (info->i < argc - 2)
 	{
-		set_info_tmp(info);
+		set_info(info, false);
 		if (pipe(info->fd_tmp) == -1)
 			ft_perror(FAIL_PIPE);
 		info->pid_tmp = fork();
@@ -111,7 +99,7 @@ int	main(int argc, char **argv, char **envp)
 
 	if (argc < 5)
 		ft_perror(USAGE);
-	set_info(&info);
+	set_info(&info, true);
 	if (pipe(info.fd) == -1)
 		ft_perror(FAIL_PIPE);
 	info.pid = fork();

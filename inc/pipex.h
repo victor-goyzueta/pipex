@@ -6,7 +6,7 @@
 /*   By: vgoyzuet <vgoyzuet@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 17:27:08 by vgoyzuet          #+#    #+#             */
-/*   Updated: 2025/03/17 01:39:00 by vgoyzuet         ###   ########.fr       */
+/*   Updated: 2025/03/17 16:36:02 by vgoyzuet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ typedef struct s_info
 }	t_info;
 
 void	execute_command(char *argv, char **envp);
-void	set_info(t_info *info);
-void	set_info_tmp(t_info *info);
+void	set_info(t_info *info, bool check);
+void	middle_process(char **argv, char **envp, t_info info, int pre_fd);
 
 #endif
