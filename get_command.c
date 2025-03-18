@@ -5,12 +5,12 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: vgoyzuet <vgoyzuet@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/18 15:16:03 by vgoyzuet          #+#    #+#             */
-/*   Updated: 2025/03/18 15:37:33 by vgoyzuet         ###   ########.fr       */
+/*   Created: 2025/03/18 19:01:03 by vgoyzuet          #+#    #+#             */
+/*   Updated: 2025/03/18 19:07:33 by vgoyzuet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "pipex.h"
+#include <stdlib.h>
 
 static int	count_words(char *argv)
 {
@@ -19,45 +19,85 @@ static int	count_words(char *argv)
 	count = 0;
 	while (*argv)
 	{
-		if (!ft_is_space_tab(*argv))
+		if (*argv == 39)
 		{
 			count++;
-			if (*argv == 39)
-			{
+			argv++;
+			while(*argv && *argv != 39)
 				argv++;
-				while (*argv && *argv != 39)
-					argv++;
-				if (*argv)
-					argv++;
-			}
-			else
-			{
-				//
-				argv++;
-			}
+			argv++;
 		}
-		//
-		argv++;
+		else if (!ft_is_space_tab(*argv))
+		{
+			count++;
+			while(*argv && (!ft_is_space_tab(*argv) && *argv != 39))
+				argv++;
+		}
+		else
+			argv++;
 	}
+	return (count);
+}
+
+static char	*allocate1(char *argv, char **command, int *word)
+{
+	int	len;
+
+	len = 0;
+	while(argv[len] && argv[len] != 39)
+			len++;
+	command[*word] = ft_substr(argv, 0, len + 1);
+	if (!command[*word])
+	{
+		free_array(command);
+		return (NULL);
+	}
+	*word = *word + 1;
+	return (argv += len);
+}
+
+static char	*allocate2(char *argv, char **command, int *word)
+{
+	int	len;
+
+	len = 0;
+	while(argv[len] && (!ft_is_space_tab(argv[len]) && argv[len] != 39))
+		len++;
+	command[*word] = ft_substr(argv, 0, len + 1);
+	if (!command[*word])
+	{
+		free_array(command);
+		return (NULL);
+	}
+	*word = *word + 1;
+	return (argv += len);
 }
 
 char	**get_command(char *argv)
 {
 	char	**command;
 	int		count;
+	int		word;
 
 	if (!argv)
 		return (NULL);
-	if (!ft_strchr(argv, 39))
-	{
-		command = ft_split(argv, ' ');
-		return (command);
-	}
 	count = count_words(argv);
-	//
+	command = ft_calloc(count + 1, sizeof(char *));
+	if (!command)
+		return (NULL);
+	command[count] = NULL;
+	word = 0;
+	while(*argv && word < count)
+	{
+		if (*argv == 39)
+		{
+			argv++;
+			argv = allocate1(argv, command, &word);
+		}
+		else if (!ft_is_space_tab(*argv))
+			argv = allocate2(argv, command, &word);
+		else
+			argv++;
+	}
+	return (command);
 }
-
-/*test*/
-//tr ' ' '\n'
-//cut -d' ' -f2
-/*end*/
