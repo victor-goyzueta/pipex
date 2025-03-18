@@ -6,7 +6,7 @@
 /*   By: vgoyzuet <vgoyzuet@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 16:56:22 by vgoyzuet          #+#    #+#             */
-/*   Updated: 2025/03/17 21:23:11 by vgoyzuet         ###   ########.fr       */
+/*   Updated: 2025/03/18 19:08:44 by vgoyzuet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,9 @@ void	execute_command(char *argv, char **envp)
 	char	**command;
 	char	*pathname;
 
-	command = ft_split(argv, ' '); //or get_command
+	command = ft_split(argv, ' ');
 	if (!command)
-		ft_perror(FAIL_ALLOC); //free?
+		ft_perror(FAIL_ALLOC);
 	pathname = NULL;
 	find_path(command[0], envp, &pathname);
 	if (!pathname)
