@@ -6,7 +6,7 @@
 /*   By: vgoyzuet <vgoyzuet@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 19:46:56 by vgoyzuet          #+#    #+#             */
-/*   Updated: 2025/03/20 21:33:31 by vgoyzuet         ###   ########.fr       */
+/*   Updated: 2025/03/20 22:31:21 by vgoyzuet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,17 +23,17 @@ static void pipex(int argc, char **argv, char **envp, t_info *info)
 			ft_perror(FAIL_FORK);
 		if (info->pid == 0)
 		{
-			if (info->i > 2)
-			{
-				if (dup2(info->pre_fd, STDIN_FILENO) == -1)
-					ft_perror(FAIL_FLOW);
-			}
-			else
+			if (info->i == 2)
 			{
 				if (dup2(info->infile, STDIN_FILENO) == -1)
 					ft_perror(FAIL_FLOW);
 				if (close(info->infile) == -1)
 					ft_perror(FAIL_CLOSE_FD);
+			}
+			else
+			{
+				if (dup2(info->pre_fd, STDIN_FILENO) == -1)
+					ft_perror(FAIL_FLOW);
 			}
 			if (dup2(info->fd[1], STDOUT_FILENO) == -1)
 				ft_perror(FAIL_FLOW);
@@ -83,7 +83,11 @@ static void pipex(int argc, char **argv, char **envp, t_info *info)
 static void	check_here_doc(char **argv, t_info *info)
 {
 	if (ft_strncmp(argv[1], "here_doc", 8) != 0)
+	{
 		info->infile = open(argv[1], O_RDONLY);
+		if (info->infile == -1)
+			ft_perror(FAIL_OPEN_FD);
+	}
 	else
 		return ;
 }
