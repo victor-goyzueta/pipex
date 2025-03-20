@@ -6,7 +6,7 @@
 #    By: vgoyzuet <vgoyzuet@student.42madrid.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/11/18 22:28:58 by vgoyzuet          #+#    #+#              #
-#    Updated: 2025/03/17 20:09:14 by vgoyzuet         ###   ########.fr        #
+#    Updated: 2025/03/20 16:46:13 by vgoyzuet         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -71,7 +71,6 @@ SRCS	=	ft_isalpha.c			\
 			get_next_line.c			\
 			ft_free_utils.c			\
 			ft_abs.c				\
-			ft_is_space_tab.c		\
 	
 OBJS = $(SRCS:.c=.o)
 
