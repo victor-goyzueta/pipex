@@ -6,7 +6,7 @@
 /*   By: vgoyzuet <vgoyzuet@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 17:32:54 by vgoyzuet          #+#    #+#             */
-/*   Updated: 2025/03/20 17:15:35 by vgoyzuet         ###   ########.fr       */
+/*   Updated: 2025/03/20 17:23:06 by vgoyzuet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,10 +32,9 @@ static void	check_process(char **argv, char **envp, t_info *info, int argc)
 			middle_process(argv, envp, *info, info->pre_fd);
 		else
 		{
-			info->pre_fd = info->fd_tmp[0];
-			if (close(info->fd_tmp[1]) == -1 || close(info->fd_tmp[0]) == -1
-				|| close(info->pre_fd) == -1)
+			if (close(info->fd_tmp[1]) == -1 || close(info->pre_fd) == -1)
 				ft_perror(FAIL_CLOSE_FD);
+			info->pre_fd = info->fd_tmp[0];
 		}
 	}
 	info->fd[0] = info->pre_fd;
