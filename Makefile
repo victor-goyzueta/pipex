@@ -6,7 +6,7 @@
 #    By: vgoyzuet <vgoyzuet@student.42madrid.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/03/12 17:35:31 by vgoyzuet          #+#    #+#              #
-#    Updated: 2025/03/17 21:04:45 by vgoyzuet         ###   ########.fr        #
+#    Updated: 2025/03/20 16:31:39 by vgoyzuet         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -23,9 +23,9 @@ CFLAGS += -I inc
 
 LIBFT = libft/libft.a
 
-SRCS = 	src/main.c					\
-		src/utils.c					\
-		src/execute_command_utils.c	\
+SRCS = 	src/main.c				\
+		src/utils.c				\
+		src/ft_split_quote.c	\
 
 OBJS = $(SRCS:%.c=objs/%.o)
 
