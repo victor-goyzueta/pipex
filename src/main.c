@@ -5,92 +5,87 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: vgoyzuet <vgoyzuet@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/12 17:32:54 by vgoyzuet          #+#    #+#             */
-/*   Updated: 2025/03/20 18:26:17 by vgoyzuet         ###   ########.fr       */
+/*   Created: 2025/03/20 19:46:56 by vgoyzuet          #+#    #+#             */
+/*   Updated: 2025/03/20 21:33:31 by vgoyzuet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
-static void	check_process(char **argv, char **envp, t_info *info, int argc)
+static void pipex(int argc, char **argv, char **envp, t_info *info)
 {
-	if (argc < 6 || info->pid == 0)
-		return ;
-	if (!info)
-		ft_perror(FAIL_ALLOC);
-	info->i = 2;
-	info->pre_fd = info->fd[0];
 	while (info->i < argc - 2)
 	{
-		set_info(info, false);
-		if (pipe(info->fd_tmp) == -1)
+		if (pipe(info->fd) == -1)
 			ft_perror(FAIL_PIPE);
-		info->pid_tmp = fork();
-		if (info->pid_tmp == -1)
+		info->pid = fork();
+		if (info->pid == -1)
 			ft_perror(FAIL_FORK);
-		if (info->pid_tmp == 0)
-			middle_process(argv, envp, *info, info->pre_fd);
+		if (info->pid == 0)
+		{
+			if (info->i > 2)
+			{
+				if (dup2(info->pre_fd, STDIN_FILENO) == -1)
+					ft_perror(FAIL_FLOW);
+			}
+			else
+			{
+				if (dup2(info->infile, STDIN_FILENO) == -1)
+					ft_perror(FAIL_FLOW);
+				if (close(info->infile) == -1)
+					ft_perror(FAIL_CLOSE_FD);
+			}
+			if (dup2(info->fd[1], STDOUT_FILENO) == -1)
+				ft_perror(FAIL_FLOW);
+			if (close(info->fd[0]) == -1 || close(info->fd[1]) == -1)
+				ft_perror(FAIL_CLOSE_FD);
+			execute_command(argv[info->i], envp);
+		}
 		else
 		{
-			if (close(info->fd_tmp[1]) == -1 || close(info->pre_fd) == -1)
+			if (close(info->fd[1]) == -1)
 				ft_perror(FAIL_CLOSE_FD);
-			info->pre_fd = info->fd_tmp[0];
+			if (info->i > 2)
+			{
+				if (close(info->pre_fd) == -1)
+					ft_perror(FAIL_CLOSE_FD);
+				info->pre_fd = info->fd[0];
+			}
 		}
+		info->i++;
 	}
-	info->fd[0] = info->pre_fd;
+	info->pid = fork();
+	if (info->pid == -1)
+		ft_perror(FAIL_FORK);
+	if (info->pid == 0)
+	{
+		if (dup2(info->pre_fd, STDIN_FILENO) == -1)
+			ft_perror(FAIL_FLOW);
+		if (close(info->pre_fd) == -1)
+			ft_perror(FAIL_CLOSE_FD);
+		info->outfile = open(argv[argc - 1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
+		if (info->outfile == -1)
+			ft_perror(FAIL_OPEN_FD);
+		if (dup2(info->outfile, STDOUT_FILENO) == -1)
+			ft_perror(FAIL_FLOW);
+		if (close(info->outfile) == -1)
+			ft_perror(FAIL_CLOSE_FD);
+		execute_command(argv[argc - 2], envp);
+	}
+	else
+	{
+		if (close(info->pre_fd) == -1)
+			ft_perror(FAIL_CLOSE_FD);
+		wait(NULL);
+	}
 }
 
-static void	child_process(char **argv, char **envp, t_info info)
+static void	check_here_doc(char **argv, t_info *info)
 {
-	int	filein;
-
-	if (info.pid != 0)
+	if (ft_strncmp(argv[1], "here_doc", 8) != 0)
+		info->infile = open(argv[1], O_RDONLY);
+	else
 		return ;
-	filein = open(argv[1], O_RDONLY);
-	if (filein == -1)
-		ft_perror(FAIL_OPEN_FD);
-	if (dup2(info.fd[1], STDOUT_FILENO) == -1
-		|| dup2(filein, STDIN_FILENO) == -1)
-	{
-		if (close(filein) == -1 || close(info.fd[0]) == -1
-			|| close(info.fd[1]) == -1)
-			ft_perror(FAIL_CLOSE_FD);
-		ft_perror(FAIL_CHILD);
-	}
-	if (close(filein) == -1 || close(info.fd[0]) == -1
-		|| close(info.fd[1]) == -1)
-		ft_perror(FAIL_CLOSE_FD);
-	execute_command(argv[2], envp);
-	exit(EXIT_SUCCESS);
-}
-
-static void	parent_process(char **argv, char **envp, t_info info)
-{
-	int	i;
-	int	fileout;
-
-	if (info.pid == 0)
-		return ;
-	if (waitpid(info.pid, NULL, 0) == -1)
-		ft_perror(FAIL_WAIT);
-	i = 0;
-	while (argv[i])
-		i++;
-	fileout = open(argv[i - 1], O_WRONLY | O_CREAT | O_TRUNC, 0777);
-	if (fileout == -1)
-		ft_perror(FAIL_OPEN_FD);
-	if (dup2(info.fd[0], STDIN_FILENO) == -1
-		|| dup2(fileout, STDOUT_FILENO) == -1)
-	{
-		if (close(fileout) == -1 || close(info.fd[0]) == -1
-			|| close(info.fd[1]) == -1)
-			ft_perror(FAIL_CLOSE_FD);
-		ft_perror(FAIL_PARENT);
-	}
-	if (close(fileout) == -1 || close(info.fd[0]) == -1
-		|| close(info.fd[1]) == -1)
-		ft_perror(FAIL_CLOSE_FD);
-	execute_command(argv[i - 2], envp);
 }
 
 int	main(int argc, char **argv, char **envp)
@@ -99,14 +94,8 @@ int	main(int argc, char **argv, char **envp)
 
 	if (argc < 5)
 		ft_perror(USAGE);
-	set_info(&info, true);
-	if (pipe(info.fd) == -1)
-		ft_perror(FAIL_PIPE);
-	info.pid = fork();
-	if (info.pid == -1)
-		ft_perror(FAIL_FORK);
-	child_process(argv, envp, info);
-	check_process(argv, envp, &info, argc);
-	parent_process(argv, envp, info);
+	set_info(&info);
+	check_here_doc(argv, &info);
+	pipex(argc, argv, envp, &info);
 	return (0);
 }

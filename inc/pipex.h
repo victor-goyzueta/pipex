@@ -6,7 +6,7 @@
 /*   By: vgoyzuet <vgoyzuet@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 17:27:08 by vgoyzuet          #+#    #+#             */
-/*   Updated: 2025/03/20 19:07:44 by vgoyzuet         ###   ########.fr       */
+/*   Updated: 2025/03/20 21:08:44 by vgoyzuet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 # define FAIL_WAIT		"Failed waitpid function"
 # define FAIL_OPEN_FD	"Failed to open fd"
 # define FAIL_CLOSE_FD	"Failed to close fd"
+# define FAIL_FLOW		"Failure to redirect flows"
 # define FAIL_CHILD		"Failure to redirect flows in child process"
 # define FAIL_MID		"Failure to redirect flows in middle process"
 # define FAIL_PARENT	"Failure to redirect flows in parent process"
@@ -32,15 +33,13 @@ typedef struct s_info
 {
 	int		i;
 	int		fd[2];
-	int		fd_tmp[2];
 	int		pre_fd;
+	int		infile;
+	int		outfile;
 	pid_t	pid;
-	pid_t	pid_tmp;
 }	t_info;
 
+void	set_info(t_info *info);
 void	execute_command(char *argv, char **envp);
-void	set_info(t_info *info, bool check);
-void	middle_process(char **argv, char **envp, t_info info, int pre_fd);
-char	**ft_split_quote(char const *s, char c);
 
 #endif
