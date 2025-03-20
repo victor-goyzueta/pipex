@@ -6,7 +6,7 @@
 /*   By: vgoyzuet <vgoyzuet@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 16:56:22 by vgoyzuet          #+#    #+#             */
-/*   Updated: 2025/03/20 16:49:15 by vgoyzuet         ###   ########.fr       */
+/*   Updated: 2025/03/20 17:18:29 by vgoyzuet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ static void	find_path(char *command, char **envp, char **pathname)
 		*pathname = so_strjoin(directories[i], "/");
 		if (!*pathname)
 			ft_exit_free(EXIT_FAILURE, FAIL_ALLOC, directories);
-		*pathname = ft_strjoin(*pathname, command);
+		*pathname = so_strjoin(*pathname, command);
 		if (!*pathname)
 			ft_exit_free(EXIT_FAILURE, FAIL_ALLOC, directories);
 		if (access(*pathname, F_OK) == 0)
@@ -89,5 +89,4 @@ void	middle_process(char **argv, char **envp, t_info info, int pre_fd)
 		|| close(info.fd_tmp[1]) == -1 || close(info.fd[1]) == -1)
 		ft_perror(FAIL_CLOSE_FD);
 	execute_command(argv[info.i], envp);
-	exit(EXIT_SUCCESS);
 }
