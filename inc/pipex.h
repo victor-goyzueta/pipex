@@ -6,7 +6,7 @@
 /*   By: vgoyzuet <vgoyzuet@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 17:27:08 by vgoyzuet          #+#    #+#             */
-/*   Updated: 2025/03/21 17:00:55 by vgoyzuet         ###   ########.fr       */
+/*   Updated: 2025/03/21 18:04:23 by vgoyzuet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,6 @@ typedef struct s_info
 
 void	set_info(t_info *info);
 void	execute_command(char *argv, char **envp);
-void	put_here_doc(char *argv, t_info info);
+void	put_here_doc(t_info *info);
 
 #endif
