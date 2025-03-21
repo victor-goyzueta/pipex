@@ -6,7 +6,7 @@
 /*   By: vgoyzuet <vgoyzuet@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 17:27:08 by vgoyzuet          #+#    #+#             */
-/*   Updated: 2025/03/21 18:04:23 by vgoyzuet         ###   ########.fr       */
+/*   Updated: 2025/03/21 21:33:25 by vgoyzuet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ typedef struct s_info
 	int		infile;
 	int		outfile;
 	char	*limiter;
+	size_t	len;
 	pid_t	pid;
 }	t_info;
 

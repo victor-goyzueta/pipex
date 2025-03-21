@@ -6,7 +6,7 @@
 /*   By: vgoyzuet <vgoyzuet@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 16:56:22 by vgoyzuet          #+#    #+#             */
-/*   Updated: 2025/03/21 18:19:07 by vgoyzuet         ###   ########.fr       */
+/*   Updated: 2025/03/22 00:06:44 by vgoyzuet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,20 +21,24 @@ void	set_info(t_info *info)
 	info->infile = 0;
 	info->outfile = 0;
 	info->limiter = NULL;
+	info->len = 0;
 	info->pid = 0;
+	if (pipe(info->fd) == -1)
+		ft_perror(FAIL_PIPE);
+	info->pid = fork();
+	if (info->pid == -1)
+		ft_perror(FAIL_FORK);
 }
 
 void	put_here_doc(t_info *info)
 {
 	char	*line;
-	size_t	len;
 
-	len = ft_strlen(info->limiter);
 	while (1)
 	{
 		ft_putstr_fd("> ", STDOUT_FILENO);
 		line = get_next_line(STDIN_FILENO);
-		if (!line || ft_strncmp(line, info->limiter, len) == 0)
+		if (!line || ft_strncmp(line, info->limiter, info->len) == 0)
 		{
 			if (line)
 				free(line);
@@ -45,14 +49,6 @@ void	put_here_doc(t_info *info)
 		free(line);
 	}
 	free(info->limiter);
-	if (dup2(info->fd[0], STDIN_FILENO) == -1)
-	{	
-		if (close(info->fd[0]) == -1 || close(info->fd[1]) == -1)
-			ft_perror(FAIL_CLOSE_FD);
-		ft_perror(FAIL_CHILD);
-	}
-	if (close(info->fd[0]) == -1 || close(info->fd[1]) == -1)
-		ft_perror(FAIL_CLOSE_FD);
 }
 
 static void	find_path(char *command, char **envp, char **path)
