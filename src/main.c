@@ -6,14 +6,59 @@
 /*   By: vgoyzuet <vgoyzuet@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 19:46:56 by vgoyzuet          #+#    #+#             */
-/*   Updated: 2025/03/20 22:31:21 by vgoyzuet         ###   ########.fr       */
+/*   Updated: 2025/03/21 02:38:35 by vgoyzuet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
+static void	child_process(char **argv, char **envp, t_info info)
+{
+	if (pipe(info.fd) == -1)
+		ft_perror(FAIL_PIPE);
+	info.pid = fork();
+	if (info.pid == -1)
+		ft_perror(FAIL_FORK);
+	if (info.pid != 0)
+		return ;
+	info.infile = open(argv[1], O_RDONLY);
+	if (info.infile == -1)
+		ft_perror(FAIL_OPEN_FD);
+		if (dup2(info.fd[1], STDOUT_FILENO) == -1
+		|| dup2(info.infile, STDIN_FILENO) == -1)
+	{
+		if (close(info.infile) == -1 || close(info.fd[0]) == -1
+			|| close(info.fd[1]) == -1)
+			ft_perror(FAIL_CLOSE_FD);
+		ft_perror(FAIL_CHILD);
+	}
+	if (close(info.infile) == -1 || close(info.fd[0]) == -1
+		|| close(info.fd[1]) == -1)
+		ft_perror(FAIL_CLOSE_FD);
+	execute_command(argv[2], envp);
+	exit(EXIT_SUCCESS);
+}
+
+static void	here_doc_process(char **argv, char **envp, t_info info)
+{
+	char	*line;
+	char	*limiter;
+	char	*here_doc;
+	size_t	len;
+
+	if (pipe(info.fd) == -1)
+		ft_perror(FAIL_PIPE);
+	info.pid = fork();
+	if (info.pid == -1)
+		ft_perror(FAIL_FORK);
+	if (info.pid != 0)
+		return ;
+	//
+}
+
 static void pipex(int argc, char **argv, char **envp, t_info *info)
 {
+	check_here_doc(argv, envp, info);
 	while (info->i < argc - 2)
 	{
 		if (pipe(info->fd) == -1)
@@ -80,16 +125,18 @@ static void pipex(int argc, char **argv, char **envp, t_info *info)
 	}
 }
 
-static void	check_here_doc(char **argv, t_info *info)
+static void	check_here_doc(char **argv, char **envp, t_info *info)
 {
 	if (ft_strncmp(argv[1], "here_doc", 8) != 0)
 	{
-		info->infile = open(argv[1], O_RDONLY);
-		if (info->infile == -1)
-			ft_perror(FAIL_OPEN_FD);
+		info->i = 2;
+		child_process(argv, envp, *info);
 	}
 	else
-		return ;
+	{
+		info->i = 3;
+		here_doc_process(argv, envp, *info);
+	}
 }
 
 int	main(int argc, char **argv, char **envp)
@@ -99,7 +146,6 @@ int	main(int argc, char **argv, char **envp)
 	if (argc < 5)
 		ft_perror(USAGE);
 	set_info(&info);
-	check_here_doc(argv, &info);
 	pipex(argc, argv, envp, &info);
 	return (0);
 }

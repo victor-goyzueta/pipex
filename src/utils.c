@@ -6,7 +6,7 @@
 /*   By: vgoyzuet <vgoyzuet@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 16:56:22 by vgoyzuet          #+#    #+#             */
-/*   Updated: 2025/03/20 21:07:54 by vgoyzuet         ###   ########.fr       */
+/*   Updated: 2025/03/21 02:38:23 by vgoyzuet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 void	set_info(t_info *info)
 {
-	info->i = 2;
+	info->i = 0;
 	info->fd[0] = 0;
 	info->fd[1] = 0;
 	info->pre_fd = 0;
