@@ -6,7 +6,7 @@
 /*   By: vgoyzuet <vgoyzuet@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 16:56:22 by vgoyzuet          #+#    #+#             */
-/*   Updated: 2025/03/21 02:38:23 by vgoyzuet         ###   ########.fr       */
+/*   Updated: 2025/03/21 16:59:22 by vgoyzuet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,37 @@ void	set_info(t_info *info)
 	info->pre_fd = 0;
 	info->infile = 0;
 	info->outfile = 0;
+	info->limiter = NULL;
 	info->pid = 0;
+}
+
+void	put_here_doc(char **argv, t_info info)
+{
+	char	*line;
+	size_t	len;
+
+	len = ft_strlen(info.limiter);
+	line = get_next_line(STDIN_FILENO);
+	while (1)
+	{
+		if (ft_strncmp(line, info.limiter, len) == 0)
+			break ;
+		write(info.fd[1], line, ft_strlen(line));
+		write(info.fd[1], "\n", 1);
+		free(line);
+		line = get_next_line(STDIN_FILENO);
+	}
+	if (line)
+		free(line);
+	free(info.limiter);
+	if (dup2(info.fd[0], STDIN_FILENO) == -1)
+	{	
+		if (close(info.fd[0]) == -1 || close(info.fd[1]) == -1)
+			ft_perror(FAIL_CLOSE_FD);
+		ft_perror(FAIL_CHILD);
+	}
+	if (close(info.fd[0]) == -1 || close(info.fd[1]) == -1)
+		ft_perror(FAIL_CLOSE_FD);
 }
 
 static void	find_path(char *command, char **envp, char **path)

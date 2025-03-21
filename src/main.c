@@ -6,7 +6,7 @@
 /*   By: vgoyzuet <vgoyzuet@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 19:46:56 by vgoyzuet          #+#    #+#             */
-/*   Updated: 2025/03/21 02:38:35 by vgoyzuet         ###   ########.fr       */
+/*   Updated: 2025/03/21 17:04:57 by vgoyzuet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ static void	child_process(char **argv, char **envp, t_info info)
 	info.infile = open(argv[1], O_RDONLY);
 	if (info.infile == -1)
 		ft_perror(FAIL_OPEN_FD);
-		if (dup2(info.fd[1], STDOUT_FILENO) == -1
+	if (dup2(info.fd[1], STDOUT_FILENO) == -1
 		|| dup2(info.infile, STDIN_FILENO) == -1)
 	{
 		if (close(info.infile) == -1 || close(info.fd[0]) == -1
@@ -41,10 +41,7 @@ static void	child_process(char **argv, char **envp, t_info info)
 
 static void	here_doc_process(char **argv, char **envp, t_info info)
 {
-	char	*line;
-	char	*limiter;
 	char	*here_doc;
-	size_t	len;
 
 	if (pipe(info.fd) == -1)
 		ft_perror(FAIL_PIPE);
@@ -53,7 +50,12 @@ static void	here_doc_process(char **argv, char **envp, t_info info)
 		ft_perror(FAIL_FORK);
 	if (info.pid != 0)
 		return ;
-	//
+	info.limiter = ft_strdup(argv[2]);
+	if (!info.limiter)
+		ft_perror(FAIL_ALLOC);
+	put_here_doc(argv, info);
+	execute_command(argv[3], envp);
+	exit(EXIT_SUCCESS);
 }
 
 static void pipex(int argc, char **argv, char **envp, t_info *info)
