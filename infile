@@ -1,0 +1,5 @@
+error 404 page not found
+error 500 internal server error
+warning low memory
+error 404 resource missing
+error 403 forbidden

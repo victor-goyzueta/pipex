@@ -6,7 +6,7 @@
 /*   By: vgoyzuet <vgoyzuet@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 16:56:22 by vgoyzuet          #+#    #+#             */
-/*   Updated: 2025/03/22 00:06:44 by vgoyzuet         ###   ########.fr       */
+/*   Updated: 2025/03/24 19:20:10 by vgoyzuet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,25 +30,34 @@ void	set_info(t_info *info)
 		ft_perror(FAIL_FORK);
 }
 
-void	put_here_doc(t_info *info)
+void	put_here_doc(t_info *info, int *hd)
 {
 	char	*line;
+	int		pid;
 
-	while (1)
+	pid = fork();
+	if (pid == 0)
 	{
-		ft_putstr_fd("> ", STDOUT_FILENO);
-		line = get_next_line(STDIN_FILENO);
-		if (!line || ft_strncmp(line, info->limiter, info->len) == 0)
+		close(hd[0]);
+		while (1)
 		{
-			if (line)
-				free(line);
-			break ;
+			ft_putstr_fd("> ", STDOUT_FILENO);
+			line = get_next_line(STDIN_FILENO);
+			if (!line || (ft_strncmp(line, info->limiter, info->len) == 0))
+			{
+				if (line)
+					free(line);
+				break ;
+			}
+			write(hd[1], line, ft_strlen(line));
+			free(line);
 		}
-		write(info->fd[1], line, ft_strlen(line));
-		write(info->fd[1], "\n", 1);
-		free(line);
+		close(hd[1]);
+		free(info->limiter);
+		exit(0);
 	}
-	free(info->limiter);
+	waitpid(pid, NULL, 0);
+	close(hd[1]);
 }
 
 static void	find_path(char *command, char **envp, char **path)
