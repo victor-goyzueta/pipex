@@ -6,7 +6,7 @@
 /*   By: vgoyzuet <vgoyzuet@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 16:56:22 by vgoyzuet          #+#    #+#             */
-/*   Updated: 2025/03/26 19:23:31 by vgoyzuet         ###   ########.fr       */
+/*   Updated: 2025/03/26 19:36:49 by vgoyzuet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,21 +37,25 @@ void	put_here_doc(t_info *info, int *hd)
 		{
 			ft_putstr_fd("> ", STDOUT_FILENO);
 			line = get_next_line(STDIN_FILENO);
-			if (!line || (ft_strncmp(line, info->limiter, info->len) == 0))
+			if (((ft_strncmp(line, info->limiter, info->len) == 0)
+				&& ft_strlen(line) - 1 == info->len) || !line)
 			{
 				if (line)
 					free(line);
 				break ;
 			}
 			write(hd[1], line, ft_strlen(line));
-				free(line);
+			free(line);
 		}
-		close(hd[1]);
+		if (close(hd[1]) == -1)
+			ft_perror(FAIL_CLOSE_FD);
 		free(info->limiter);
-		exit(0);
+		exit(EXIT_SUCCESS);
 	}
-	waitpid(pid, NULL, 0);
-	close(hd[1]);
+	if (waitpid(pid, NULL, 0) == -1)
+		ft_perror(FAIL_WAIT);
+	if (close(hd[1]) == -1)
+		ft_perror(FAIL_CLOSE_FD);
 }
 
 void	middle_process(char **argv, char **envp, t_info info, int pre_fd)

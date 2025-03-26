@@ -6,7 +6,7 @@
 #    By: vgoyzuet <vgoyzuet@student.42madrid.com    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/03/12 17:35:31 by vgoyzuet          #+#    #+#              #
-#    Updated: 2025/03/24 18:54:42 by vgoyzuet         ###   ########.fr        #
+#    Updated: 2025/03/26 19:30:15 by vgoyzuet         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,7 +18,8 @@ CLEAR	=	\r\033[K
 NAME = pipex
 
 CC = cc
-CFLAGS =  -I libft #-Wall -Wextra -Werror
+CFLAGS = -Wall -Wextra -Werror
+CFLAGS += -I libft
 CFLAGS += -I inc
 
 LIBFT = libft/libft.a
