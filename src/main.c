@@ -6,11 +6,37 @@
 /*   By: vgoyzuet <vgoyzuet@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 19:46:56 by vgoyzuet          #+#    #+#             */
-/*   Updated: 2025/03/24 19:18:31 by vgoyzuet         ###   ########.fr       */
+/*   Updated: 2025/03/26 19:22:53 by vgoyzuet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
+
+void	here_doc_process(char **argv, char **envp, t_info *info)
+{
+	int fd[2];
+	
+	if (info->pid != 0 || ft_strncmp(argv[1], "here_doc", 8) != 0)
+		return ;
+	if (pipe(fd) == -1)
+		ft_perror(FAIL_PIPE);
+	info->i = 3;
+	info->limiter = ft_strdup(argv[2]);
+	if (!info->limiter)
+		ft_perror(FAIL_ALLOC);
+	info->len = ft_strlen(info->limiter);
+	put_here_doc(info, fd);
+	if (dup2(fd[0], 0) == -1 || dup2(info->fd[1], 1) == -1)
+	{	
+		if (close(fd[0]) == -1 || close(info->fd[1]) == -1)
+			ft_perror(FAIL_CLOSE_FD);
+		ft_perror(FAIL_CHILD);
+	}
+	if (close(fd[0]) == -1)
+		ft_perror(FAIL_CLOSE_FD);
+	execute_command(argv[info->i], envp);
+	exit(EXIT_SUCCESS);
+}
 
 static void	child_process(char **argv, char **envp, t_info *info)
 {
@@ -35,39 +61,33 @@ static void	child_process(char **argv, char **envp, t_info *info)
 	exit(EXIT_SUCCESS);
 }
 
-static void	here_doc_process(char **argv, char **envp, t_info *info)
+void	check_process(char **argv, char **envp, t_info *info, int argc)
 {
-	int hd[2];
-	
-	if (info->pid != 0 || ft_strncmp(argv[1], "here_doc", 8) != 0)
+	if (argc < 6 || info->pid == 0 || ft_strncmp(argv[1], "here_doc", 8) == 0)
 		return ;
-	pipe(hd);
-	//COMPROBAR
-	info->i = 3;
-	info->limiter = ft_strdup(argv[2]);
-	if (!info->limiter)
+	if (!info)
 		ft_perror(FAIL_ALLOC);
-	info->len = ft_strlen(info->limiter);
-	put_here_doc(info, hd);
-	if (dup2(hd[0], 0) == -1 || dup2(info->fd[1], 1) == -1)
-	{	
-		if (close(hd[0]) == -1 || close(info->fd[1]) == -1)
-			ft_perror(FAIL_CLOSE_FD);
-		ft_perror(FAIL_CHILD);
+	info->i = 2;
+	info->pre_fd = info->fd[0];
+	while (info->i < argc - 2)
+	{
+		set_info(info);
+		if (pipe(info->fd_tmp) == -1)
+			ft_perror(FAIL_PIPE);
+		info->pid_tmp = fork();
+		if (info->pid_tmp == -1)
+			ft_perror(FAIL_FORK);
+		if (info->pid_tmp == 0)
+			middle_process(argv, envp, *info, info->pre_fd);
+		else
+		{
+			if (close(info->fd_tmp[1]) == -1 || close(info->pre_fd) == -1)
+				ft_perror(FAIL_CLOSE_FD);
+			info->pre_fd = info->fd_tmp[0];
+		}
 	}
-	if (close(hd[0]) == -1)
-		ft_perror(FAIL_CLOSE_FD);
-	execute_command(argv[info->i], envp);
-	exit(EXIT_SUCCESS);
+	info->fd[0] = info->pre_fd;
 }
-
-// static void	middle_process(char **argv, char **envp, t_info *info, int argc)
-// {
-// 	if (argc < 6 || info->pid == 0)
-// 		return ;
-// 	info->pre_fd = info->fd[0];
-// 	//
-// }
 
 static void	parent_process(char **argv, char **envp, t_info *info)
 {
@@ -77,7 +97,10 @@ static void	parent_process(char **argv, char **envp, t_info *info)
 	i = 0;
 	while (argv[i])
 		i++;
-	info->outfile = open(argv[i - 1], O_WRONLY | O_CREAT | O_TRUNC, 0777);
+	if (ft_strncmp(argv[1], "here_doc", 8) == 0)
+		info->outfile = open(argv[i - 1], O_WRONLY | O_CREAT | O_APPEND, 0777);
+	else
+		info->outfile = open(argv[i - 1], O_WRONLY | O_CREAT | O_TRUNC, 0777);
 	if (info->outfile == -1)
 		ft_perror(FAIL_OPEN_FD);
 	if (dup2(info->fd[0], STDIN_FILENO) == -1
@@ -93,7 +116,7 @@ static void	parent_process(char **argv, char **envp, t_info *info)
 		ft_perror(FAIL_CLOSE_FD);
 	if (waitpid(info->pid, NULL, 0) == -1)
 		ft_perror(FAIL_WAIT);
-	execute_command(argv[i -2], envp);
+	execute_command(argv[i - 2], envp);
 }
 
 int	main(int argc, char **argv, char **envp)
@@ -103,9 +126,14 @@ int	main(int argc, char **argv, char **envp)
 	if (argc < 5)
 		ft_perror(USAGE);
 	set_info(&info);
+	if (pipe(info.fd) == -1)
+		ft_perror(FAIL_PIPE);
+	info.pid = fork();
+	if (info.pid == -1)
+		ft_perror(FAIL_FORK);
 	here_doc_process(argv, envp, &info);
 	child_process(argv, envp, &info);
-//	middle_process(argv, envp, &info, argc);
+	check_process(argv, envp, &info, argc);
 	parent_process(argv, envp, &info);
 	return (0);
 }

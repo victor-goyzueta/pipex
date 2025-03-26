@@ -6,7 +6,7 @@
 /*   By: vgoyzuet <vgoyzuet@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 16:56:22 by vgoyzuet          #+#    #+#             */
-/*   Updated: 2025/03/24 19:20:10 by vgoyzuet         ###   ########.fr       */
+/*   Updated: 2025/03/26 19:23:31 by vgoyzuet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,19 +15,13 @@
 void	set_info(t_info *info)
 {
 	info->i = 0;
-	info->fd[0] = 0;
-	info->fd[1] = 0;
 	info->pre_fd = 0;
 	info->infile = 0;
 	info->outfile = 0;
 	info->limiter = NULL;
 	info->len = 0;
 	info->pid = 0;
-	if (pipe(info->fd) == -1)
-		ft_perror(FAIL_PIPE);
-	info->pid = fork();
-	if (info->pid == -1)
-		ft_perror(FAIL_FORK);
+	info->pid_tmp = 0;
 }
 
 void	put_here_doc(t_info *info, int *hd)
@@ -50,7 +44,7 @@ void	put_here_doc(t_info *info, int *hd)
 				break ;
 			}
 			write(hd[1], line, ft_strlen(line));
-			free(line);
+				free(line);
 		}
 		close(hd[1]);
 		free(info->limiter);
@@ -58,6 +52,17 @@ void	put_here_doc(t_info *info, int *hd)
 	}
 	waitpid(pid, NULL, 0);
 	close(hd[1]);
+}
+
+void	middle_process(char **argv, char **envp, t_info info, int pre_fd)
+{
+	if (dup2(pre_fd, STDIN_FILENO) == -1
+		|| dup2(info.fd_tmp[1], STDOUT_FILENO) == -1)
+		ft_perror(FAIL_MID);
+	if (close(pre_fd) == -1 || close(info.fd_tmp[0]) == -1
+		|| close(info.fd_tmp[1]) == -1 || close(info.fd[1]) == -1)
+		ft_perror(FAIL_CLOSE_FD);
+	execute_command(argv[info.i], envp);
 }
 
 static void	find_path(char *command, char **envp, char **path)

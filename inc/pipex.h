@@ -6,7 +6,7 @@
 /*   By: vgoyzuet <vgoyzuet@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 17:27:08 by vgoyzuet          #+#    #+#             */
-/*   Updated: 2025/03/24 19:09:45 by vgoyzuet         ###   ########.fr       */
+/*   Updated: 2025/03/26 19:23:50 by vgoyzuet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,16 +33,19 @@ typedef struct s_info
 {
 	int		i;
 	int		fd[2];
-	int		pre_fd;
+	int 	fd_tmp[2];
+	int 	pre_fd;
 	int		infile;
 	int		outfile;
 	char	*limiter;
 	size_t	len;
 	pid_t	pid;
-}	t_info;
+	pid_t 	pid_tmp;
+} t_info;
 
 void	set_info(t_info *info);
 void	execute_command(char *argv, char **envp);
 void	put_here_doc(t_info *info, int *hd);
+void	middle_process(char **argv, char **envp, t_info info, int pre_fd);
 
 #endif
