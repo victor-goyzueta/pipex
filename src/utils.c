@@ -6,7 +6,7 @@
 /*   By: vgoyzuet <vgoyzuet@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 16:56:22 by vgoyzuet          #+#    #+#             */
-/*   Updated: 2025/03/26 19:36:49 by vgoyzuet         ###   ########.fr       */
+/*   Updated: 2025/03/26 20:32:34 by vgoyzuet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ void	set_info(t_info *info)
 	info->pid_tmp = 0;
 }
 
-void	put_here_doc(t_info *info, int *hd)
+void	put_here_doc(t_info *info, int *fd, char *limiter)
 {
 	char	*line;
 	int		pid;
@@ -32,30 +32,44 @@ void	put_here_doc(t_info *info, int *hd)
 	pid = fork();
 	if (pid == 0)
 	{
-		close(hd[0]);
+		close(fd[0]);
 		while (1)
 		{
 			ft_putstr_fd("> ", STDOUT_FILENO);
 			line = get_next_line(STDIN_FILENO);
-			if (((ft_strncmp(line, info->limiter, info->len) == 0)
-				&& ft_strlen(line) - 1 == info->len) || !line)
+			if ((ft_strnstr(line, limiter, ft_strlen(limiter))
+				&& ft_strlen(line) - 1 == ft_strlen(limiter)) || !line)
 			{
 				if (line)
 					free(line);
 				break ;
 			}
-			write(hd[1], line, ft_strlen(line));
+			write(fd[1], line, ft_strlen(line));
 			free(line);
 		}
-		if (close(hd[1]) == -1)
+		if (close(fd[1]) == -1)
+		{
+			free(info->limiter);
 			ft_perror(FAIL_CLOSE_FD);
+		}
 		free(info->limiter);
 		exit(EXIT_SUCCESS);
 	}
-	if (waitpid(pid, NULL, 0) == -1)
-		ft_perror(FAIL_WAIT);
-	if (close(hd[1]) == -1)
-		ft_perror(FAIL_CLOSE_FD);
+	else
+	{
+		if (waitpid(pid, NULL, 0) == -1)
+		{
+			if (info->limiter)
+				free(info->limiter);
+			ft_perror(FAIL_WAIT);
+		}
+		if (close(fd[1]) == -1)
+		{
+			if (info->limiter)
+				free(info->limiter);
+			ft_perror(FAIL_CLOSE_FD);
+		}
+	}
 }
 
 void	middle_process(char **argv, char **envp, t_info info, int pre_fd)
@@ -81,18 +95,18 @@ static void	find_path(char *command, char **envp, char **path)
 		return ;
 	directories = ft_split(envp[i] + 5, ':');
 	if (!directories)
-		ft_perror(FAIL_ALLOC);
+		return ;
 	i = -1;
 	while (directories[++i])
 	{
 		*path = so_strjoin(directories[i], "/");
 		if (!*path)
-			ft_exit_free(EXIT_FAILURE, FAIL_ALLOC, directories);
+			return (free_array(directories));
 		*path = ft_strjoin(*path, command);
 		if (!*path)
-			ft_exit_free(EXIT_FAILURE, FAIL_ALLOC, directories);
-		if (access(*path, F_OK) == 0)
 			return (free_array(directories));
+		if (access(*path, F_OK) == 0)
+			return (free(*path), free_array(directories));
 		free(*path);
 	}
 	return (free_array(directories));

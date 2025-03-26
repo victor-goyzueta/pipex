@@ -6,7 +6,7 @@
 /*   By: vgoyzuet <vgoyzuet@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/27 21:11:00 by vgoyzuet          #+#    #+#             */
-/*   Updated: 2025/03/15 21:09:05 by vgoyzuet         ###   ########.fr       */
+/*   Updated: 2025/03/26 20:09:09 by vgoyzuet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,11 +19,11 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	size_t	j;
 
 	if (!s2)
-		return (NULL);
+		return (free((char *)s1), NULL);
 	s = ft_calloc(((ft_strlen((char *)s1) + ft_strlen((char *)s2)) + 1),
 			sizeof(char *));
 	if (!s)
-		return (NULL);
+		return (free((char *)s1), NULL);
 	i = 0;
 	while (s1[i])
 	{

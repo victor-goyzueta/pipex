@@ -6,7 +6,7 @@
 /*   By: vgoyzuet <vgoyzuet@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 19:46:56 by vgoyzuet          #+#    #+#             */
-/*   Updated: 2025/03/26 19:38:12 by vgoyzuet         ###   ########.fr       */
+/*   Updated: 2025/03/26 20:27:25 by vgoyzuet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,21 +18,21 @@ void	here_doc_process(char **argv, char **envp, t_info *info)
 	
 	if (info->pid != 0 || ft_strncmp(argv[1], "here_doc", 8) != 0)
 		return ;
-	if (pipe(fd) == -1)
-		ft_perror(FAIL_PIPE);
+	info->check = true;
 	info->i = 3;
-	info->limiter = ft_strdup(argv[2]);
-	if (!info->limiter)
-		ft_perror(FAIL_ALLOC);
-	info->len = ft_strlen(info->limiter);
-	put_here_doc(info, fd);
+	if (pipe(fd) == -1)
+	{
+		free(info->limiter);
+		ft_perror(FAIL_PIPE);
+	}
+	put_here_doc(info, fd, argv[2]);
 	if (dup2(fd[0], 0) == -1 || dup2(info->fd[1], 1) == -1)
 	{	
 		if (close(fd[0]) == -1 || close(info->fd[1]) == -1)
 			ft_perror(FAIL_CLOSE_FD);
 		ft_perror(FAIL_CHILD);
 	}
-	if (close(fd[0]) == -1)
+	if (close(fd[0]) == -1 || close(info->fd[1]) == -1)
 		ft_perror(FAIL_CLOSE_FD);
 	execute_command(argv[info->i], envp);
 	exit(EXIT_SUCCESS);
@@ -42,6 +42,7 @@ static void	child_process(char **argv, char **envp, t_info *info)
 {
 	if (info->pid != 0 || ft_strncmp(argv[1], "here_doc", 8) == 0)
 		return ;
+	info->check = false;
 	info->i = 2;
 	info->infile = open(argv[1], O_RDONLY);
 	if (info->infile == -1)
