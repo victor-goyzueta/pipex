@@ -6,7 +6,7 @@
 /*   By: vgoyzuet <vgoyzuet@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 16:56:22 by vgoyzuet          #+#    #+#             */
-/*   Updated: 2025/03/26 20:32:34 by vgoyzuet         ###   ########.fr       */
+/*   Updated: 2025/03/27 16:28:10 by vgoyzuet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,13 +18,11 @@ void	set_info(t_info *info)
 	info->pre_fd = 0;
 	info->infile = 0;
 	info->outfile = 0;
-	info->limiter = NULL;
-	info->len = 0;
 	info->pid = 0;
 	info->pid_tmp = 0;
 }
 
-void	put_here_doc(t_info *info, int *fd, char *limiter)
+void	put_here_doc(int *fd, char *limiter)
 {
 	char	*line;
 	int		pid;
@@ -48,27 +46,15 @@ void	put_here_doc(t_info *info, int *fd, char *limiter)
 			free(line);
 		}
 		if (close(fd[1]) == -1)
-		{
-			free(info->limiter);
 			ft_perror(FAIL_CLOSE_FD);
-		}
-		free(info->limiter);
 		exit(EXIT_SUCCESS);
 	}
 	else
 	{
 		if (waitpid(pid, NULL, 0) == -1)
-		{
-			if (info->limiter)
-				free(info->limiter);
 			ft_perror(FAIL_WAIT);
-		}
 		if (close(fd[1]) == -1)
-		{
-			if (info->limiter)
-				free(info->limiter);
 			ft_perror(FAIL_CLOSE_FD);
-		}
 	}
 }
 
@@ -106,7 +92,7 @@ static void	find_path(char *command, char **envp, char **path)
 		if (!*path)
 			return (free_array(directories));
 		if (access(*path, F_OK) == 0)
-			return (free(*path), free_array(directories));
+			return (free_array(directories));
 		free(*path);
 	}
 	return (free_array(directories));
@@ -122,10 +108,12 @@ void	execute_command(char *argv, char **envp)
 		ft_perror(FAIL_ALLOC);
 	find_path(command[0], envp, &path);
 	if (!path)
-		ft_exit_free(EXIT_FAILURE, NULL, command);
+		ft_exit_free(EXIT_FAILURE, FAIL_COM, command);
 	if (execve(path, command, envp) == -1)
 	{
 		free(path);
-		ft_exit_free(EXIT_FAILURE, NULL, command);
+		ft_exit_free(EXIT_FAILURE, FAIL_EXEC, command);
 	}
+	free(path);
+	free_array(command);
 }

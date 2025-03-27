@@ -6,7 +6,7 @@
 /*   By: vgoyzuet <vgoyzuet@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 19:46:56 by vgoyzuet          #+#    #+#             */
-/*   Updated: 2025/03/26 20:27:25 by vgoyzuet         ###   ########.fr       */
+/*   Updated: 2025/03/27 16:17:53 by vgoyzuet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,11 +21,8 @@ void	here_doc_process(char **argv, char **envp, t_info *info)
 	info->check = true;
 	info->i = 3;
 	if (pipe(fd) == -1)
-	{
-		free(info->limiter);
 		ft_perror(FAIL_PIPE);
-	}
-	put_here_doc(info, fd, argv[2]);
+	put_here_doc(fd, argv[2]);
 	if (dup2(fd[0], 0) == -1 || dup2(info->fd[1], 1) == -1)
 	{	
 		if (close(fd[0]) == -1 || close(info->fd[1]) == -1)
